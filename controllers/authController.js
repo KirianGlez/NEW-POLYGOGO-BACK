@@ -48,3 +48,19 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "Error en el servidor" });
   }
 };
+
+exports.verify = async (req, res) => {
+  const token = req.body.token; // Obtener el token del cuerpo de la solicitud
+  if (!token) {
+    return res.status(401).json({ message: "No se proporcionó un token" });
+  }
+
+  jwt.verify(token, "secreto_supersecreto", (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Token inválido" });
+    }
+
+    // El token es válido, puedes acceder a la información decodificada en 'decoded'
+    return res.status(200).json({ message: "Token válido", decoded });
+  });
+};

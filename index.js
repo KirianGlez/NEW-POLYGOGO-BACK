@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -19,6 +20,8 @@ mongoose
 
 // Middleware para parsear JSON
 app.use(express.json());
+
+app.use(cors());
 
 // Rutas de autenticación
 const authRoutes = require("./routes/authRoutes");
