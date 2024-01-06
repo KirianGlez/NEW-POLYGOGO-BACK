@@ -10,5 +10,4 @@ router.post("/login", authController.login);
 // Ruta de verificación de token
 router.post("/verify-token", authController.verify);
 
-
 module.exports = router;
