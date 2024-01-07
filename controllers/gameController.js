@@ -4,10 +4,8 @@ const Player = require("../models/Player");
 exports.search = async (req, res) => {
   try {
     const userId = req.user.userId; // Asumiendo que el ID del usuario está en el token
-
     // Verificar si el usuario ya está en una partida activa
     const players = await Player.find({ user: userId }).populate("game").exec();
-
     const activeGames = players.filter((player) => {
       return player.game && player.game.isActive;
     });
@@ -49,7 +47,42 @@ exports.search = async (req, res) => {
     game.players.push(player);
     await game.save();
 
+    if (game.players.length === 4) {
+      game.isInGame = true;
+      await game.save();
+    }
+
     res.json({ game, player });
+  } catch (error) {
+    res.status(500).json({ message: "Error al buscar partida", error });
+  }
+};
+
+exports.checkGameInGame = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Asumiendo que el ID del usuario está en el token
+
+    // Verificar si el usuario ya está en una partida activa que esté en juego
+    const players = await Player.find({ user: userId }).populate("game").exec();
+    const activeInGame = players.find((player) => {
+      return player.game && player.game.isActive && player.game.isInGame;
+    });
+    if (activeInGame) {
+      // Si el usuario ya está en una partida activa que está en juego
+      const game = await Game.findById(activeInGame.game._id).populate({
+        path: "players",
+        populate: {
+          path: "user",
+          select: "username", // Aquí seleccionas los campos que deseas obtener
+        },
+      });
+      res.json({ game });
+      return;
+    }
+
+    res.json({
+      message: false,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error al buscar partida", error });
   }

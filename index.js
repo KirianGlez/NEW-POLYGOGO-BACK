@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+const server = require("http").createServer(app);
 
 // Conexión a la base de datos
 mongoose

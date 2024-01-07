@@ -7,4 +7,6 @@ router.use(authMiddleware);
 
 router.get("/search-game", gameController.search);
 
+router.get("/check-ingame", gameController.checkGameInGame);
+
 module.exports = router;

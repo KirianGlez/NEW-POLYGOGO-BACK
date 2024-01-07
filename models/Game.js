@@ -9,14 +9,13 @@ const gameSchema = new mongoose.Schema(
     players: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Player", // Referencia al modelo de jugador (que se definirá más adelante)
+        ref: "Player",
       },
     ],
 
     isInGame: { type: Boolean, default: false }, // Indica si la partida está en juego
   },
   {
-    // Definición de validaciones
     validate: {
       validator: function (players) {
         return players.length <= 4; // Limitar a un máximo de 4 jugadores
