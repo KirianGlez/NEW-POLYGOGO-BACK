@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const swaggerUi = require('swagger-ui-express');
+const specs = require('./swaggerOptions');
 
 const app = express();
 const server = require("http").createServer(app);
@@ -35,3 +37,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
+//Configuración de Express para swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
