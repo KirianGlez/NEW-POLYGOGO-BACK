@@ -49,6 +49,11 @@ exports.search = async (req, res) => {
 
     if (game.players.length === 4) {
       game.isInGame = true;
+      const randomPlayerIndex = Math.floor(Math.random() * game.players.length);
+      const selectedPlayer = game.players[randomPlayerIndex];
+
+      game.turn = selectedPlayer;
+
       await game.save();
     }
 
@@ -64,19 +69,19 @@ exports.checkGameInGame = async (req, res) => {
 
     // Verificar si el usuario ya está en una partida activa que esté en juego
     const players = await Player.find({ user: userId }).populate("game").exec();
-    const activeInGame = players.find((player) => {
+    const player = players.find((player) => {
       return player.game && player.game.isActive && player.game.isInGame;
     });
-    if (activeInGame) {
+    if (player) {
       // Si el usuario ya está en una partida activa que está en juego
-      const game = await Game.findById(activeInGame.game._id).populate({
+      const game = await Game.findById(player.game._id).populate({
         path: "players",
         populate: {
           path: "user",
           select: "username", // Aquí seleccionas los campos que deseas obtener
         },
       });
-      res.json({ game });
+      res.json({ game, player });
       return;
     }
 

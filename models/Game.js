@@ -12,7 +12,10 @@ const gameSchema = new mongoose.Schema(
         ref: "Player",
       },
     ],
-
+    turn: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Player",
+    },
     isInGame: { type: Boolean, default: false }, // Indica si la partida está en juego
   },
   {
