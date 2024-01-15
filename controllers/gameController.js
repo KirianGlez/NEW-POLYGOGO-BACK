@@ -92,3 +92,15 @@ exports.checkGameInGame = async (req, res) => {
     res.status(500).json({ message: "Error al buscar partida", error });
   }
 };
+
+exports.rollDice = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Asumiendo que el ID del usuario está en el token
+
+    res.json({
+      message: "dados tirados",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al buscar partida", error });
+  }
+};

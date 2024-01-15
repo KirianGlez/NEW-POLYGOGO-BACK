@@ -9,4 +9,6 @@ router.get("/search-game", gameController.search);
 
 router.get("/check-ingame", gameController.checkGameInGame);
 
+router.get("/roll-dice", gameController.rollDice);
+
 module.exports = router;
