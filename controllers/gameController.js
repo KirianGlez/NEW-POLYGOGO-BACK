@@ -81,7 +81,12 @@ exports.checkGameInGame = async (req, res) => {
           select: "username", // Aquí seleccionas los campos que deseas obtener
         },
       });
-      res.json({ game, player });
+      if (res) {
+        res.json({ game, player });
+      } else {
+        return { game, player };
+      }
+
       return;
     }
 
@@ -97,8 +102,50 @@ exports.rollDice = async (req, res) => {
   try {
     const userId = req.user.userId; // Asumiendo que el ID del usuario está en el token
 
+    const game = await this.checkGameInGame(req);
+    if ((game.game.turn.user = userId && !game.player.playing)) {
+      const dice = Math.floor(Math.random() * 6) + 1;
+      game.player.dice = dice;
+
+      if (game.player.position >= 21) {
+        game.player.position = game.player.position + dice;
+        game.player.position = game.player.position - 21;
+      } else {
+        game.player.position = game.player.position + dice;
+      }
+      game.player.playing = true;
+      game.player.save();
+    }
+
     res.json({
-      message: "dados tirados",
+      message: game.player,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al buscar partida", error });
+  }
+};
+
+exports.nextTurn = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Asumiendo que el ID del usuario está en el token
+
+    const game = await this.checkGameInGame(req);
+    if ((game.game.turn.user = userId && game.player.playing)) {
+      game.player.playing = false;
+      const index = game.game.players.findIndex((player) => {
+        return player.user._id.toString() === game.player.user.toString();
+      });
+      if (index == 3) {
+        game.game.turn = game.game.players[0];
+      } else {
+        game.game.turn = game.game.players[index + 1];
+      }
+    }
+    game.game.save();
+    game.player.save();
+
+    res.json({
+      message: true,
     });
   } catch (error) {
     res.status(500).json({ message: "Error al buscar partida", error });

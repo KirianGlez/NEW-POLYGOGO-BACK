@@ -11,4 +11,6 @@ router.get("/check-ingame", gameController.checkGameInGame);
 
 router.get("/roll-dice", gameController.rollDice);
 
+router.get("/next-turn", gameController.nextTurn);
+
 module.exports = router;

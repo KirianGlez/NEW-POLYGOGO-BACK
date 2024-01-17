@@ -11,6 +11,8 @@ const playerSchema = new mongoose.Schema({
   },
   money: { type: Number, default: 0 }, // Dinero disponible para el jugador
   position: { type: Number, default: 0 }, // Posición del jugador en la partida
+  playing: { type: Boolean, default: false },
+  dice: { type: Number, default: 0 },
 });
 
 const Player = mongoose.model("Player", playerSchema);
