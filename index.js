@@ -29,8 +29,10 @@ app.use(cors());
 // Rutas de autenticación
 const authRoutes = require("./routes/authRoutes");
 const gameRoutes = require("./routes/gameRoutes");
+const skinsRoutes = require("./routes/skinsRoutes");
 app.use("/auth", authRoutes);
 app.use("/game", gameRoutes);
+app.use("/skin", skinsRoutes);
 
 // Iniciar el servidor
 const port = process.env.PORT || 3000;
