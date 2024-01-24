@@ -3,6 +3,7 @@ const router = express.Router();
 const Skin = require('../models/tiendaSkins');
 const User = require('../models/User');
 const Inventory = require('../models/Inventory');
+const UserMore = require('../models/UserMore');
 
 //Obtener todas las skins disponibles
 router.get('/skins', async (req, res) => {
@@ -31,13 +32,13 @@ router.post('/comprar', async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado'});
         }
 
-        if (user.polymoney < skin.price) {
+        if (UserMore.polymoney < skin.price) {
             return res.status(400).json({ message: 'Saldo insuficiente para comprar la skin' });
         }
 
-        user.polymoney -= skin.price;
+        UserMore.polymoney -= skin.price;
 
-        await user.save();
+        await UserMore.save();
 
         const inventoryItem = new Inventory({
             user: user,
@@ -46,7 +47,7 @@ router.post('/comprar', async (req, res) => {
 
         await inventoryItem.save();
 
-        res.json({message: 'Compra exitosa', newPolymoney: user.polymoney });
+        res.json({message: 'Compra exitosa', newPolymoney: UserMore.polymoney });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
