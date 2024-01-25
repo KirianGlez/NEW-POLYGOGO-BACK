@@ -1,5 +1,8 @@
 const Game = require("../models/Game");
 const Player = require("../models/Player");
+const BoardGame = require('../models/BoardGame');  
+const BoardInfoDefault = require('../models/BoardInfoDefault'); 
+
 
 exports.search = async (req, res) => {
   try {
@@ -35,7 +38,10 @@ exports.search = async (req, res) => {
     } else {
       // Si no se encontraron partidas que cumplan con los criterios o tienen 4 jugadores
       // Crear una nueva partida
-      game = new Game({ isActive: true });
+      
+      const boardInfoDefaultData = await BoardInfoDefault.findOne({ title: "Fast Board" });
+      
+      game = new Game({ isActive: true, board: await crearNuevoBoardGame(boardInfoDefaultData) });
       await game.save();
     }
 
@@ -59,9 +65,23 @@ exports.search = async (req, res) => {
 
     res.json({ game, player });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error al buscar partida", error });
   }
 };
+
+async function crearNuevoBoardGame(boardInfoDefaultData) {
+  // Crear un nuevo tablero de juego con datos de BoardInfoDefault
+  
+  const nuevoBoardGame = new BoardGame({
+    title: boardInfoDefaultData.title,
+    // Otras propiedades del tablero de juego
+    boxes: boardInfoDefaultData.boxes.map(box => ({ ...box, player_owner: undefined }))
+  });
+  // Guardar el nuevo tablero de juego en la base de datos
+  await nuevoBoardGame.save();
+  return nuevoBoardGame._id;
+}
 
 exports.checkGameInGame = async (req, res) => {
   try {
@@ -74,13 +94,15 @@ exports.checkGameInGame = async (req, res) => {
     });
     if (player) {
       // Si el usuario ya está en una partida activa que está en juego
-      const game = await Game.findById(player.game._id).populate({
+      const game = await Game.findById(player.game._id)
+      .populate({
         path: "players",
         populate: {
           path: "user",
-          select: "username", // Aquí seleccionas los campos que deseas obtener
-        },
-      });
+          select: "username"
+        }
+      })
+      .populate("board");
       if (res) {
         res.json({ game, player });
       } else {
@@ -94,6 +116,7 @@ exports.checkGameInGame = async (req, res) => {
       message: false,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error al buscar partida", error });
   }
 };

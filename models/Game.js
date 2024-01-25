@@ -16,6 +16,10 @@ const gameSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Player",
     },
+    board: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "board-game",
+    },
     isInGame: { type: Boolean, default: false }, // Indica si la partida está en juego
   },
   {
